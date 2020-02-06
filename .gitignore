@@ -1,18 +1,33 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+x=xlsread('data.xlsx','Sheet1','A2:A1001');
+%从Excel表中读取整体数据
 
-# Other files and folders
-.settings/
+n=10;   %每个样本含10个元素
+m=200;  %取200个样本
+simple=zeros(200,10);
+for i=1:m
+simple(i,:)=round(unifrnd(1,1000,1,n));   %生成在1到1000内的一个1xn阶整数矩阵
+    for k=1:n
+        K=k;
+        while K>1
+         K=K-1;
+            while simple(i,k)==simple(i,K)
+                simple(i,k)=round(unifrnd(1,1000,1));
+            end
+        end
+    end
+    simple(i,:)=sort(simple(i,:));   %升序排列各行数组
+end
+simple=simple';  %变量simple中每一列代表一个样本，共200列
+for i=1:m
+est(i)=(1+1/n)*simple(n,i)-1;   %得到200个案例各自的估计值
+end
+xlswrite('data.xlsx',est','Sheet1','F2:F201')
+%输出变量est到Excel表中
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+ave=mean(est(:));  %求矩阵est所有元素的均值
+xlswrite('data.xlsx',ave,'Sheet1','B2:B2')
+%输出变量ave到Excel表中
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+D=std2(est);       %求矩阵est所有元素的标准差
+xlswrite('data.xlsx',D,'Sheet1','E2:E2')
+%输出变量D到Excel表中
